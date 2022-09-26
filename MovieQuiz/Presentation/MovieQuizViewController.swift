@@ -42,7 +42,7 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var counterLabel: UILabel!
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var questionLabel: UILabel!
-    @IBOutlet var buttons: [UIButton]!
+    @IBOutlet private var buttons: [UIButton]!
     
     //переменная для отображения номера вопроса
     private var currentQuestionIndex: Int = 0
@@ -107,13 +107,12 @@ final class MovieQuizViewController: UIViewController {
             correctAnswerCounter += 1
             imageView.layer.borderWidth = 8
             imageView.layer.borderColor = UIColor.ypGreen.cgColor
-            enableOrDisableButtons()
         } else {
             correctAnswerCounter += 0
             imageView.layer.borderWidth = 8
             imageView.layer.borderColor = UIColor.ypRed.cgColor
-            enableOrDisableButtons()
         }
+        enableOrDisableButtons()
         
         //настройка времени перехода между элементами квиза
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
