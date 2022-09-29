@@ -84,7 +84,8 @@ final class MovieQuizViewController: UIViewController {
             preferredStyle: .alert)
         
         //добавление кнопки для алерта
-        let resultButtonAction = UIAlertAction(title: result.buttonText, style: .default) { _ in
+        let resultButtonAction = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
+            guard let self = self else {return}
             self.currentQuestionIndex = 0
             self.correctAnswerCounter = 0
             
@@ -113,7 +114,8 @@ final class MovieQuizViewController: UIViewController {
         }
         
         //настройка времени перехода между элементами квиза
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else {return}
             self.showNextQuestionOrResults()
             self.imageView.layer.borderWidth = 0
         }
