@@ -1,41 +1,6 @@
 import UIKit
 
-//структура для вопроса
-private struct QuizQuestion {
-    let image: String
-    let text: String
-    let correctAnswer: Bool
-}
-
-// для состояния "Вопрос задан"
-private struct QuizStepViewModel {
-  let image: UIImage
-  let question: String
-  let questionNumber: String
-}
-
-// для состояния "Результат квиза"
-private struct QuizResultsViewModel {
-  let title: String
-  let text: String
-  let buttonText: String
-}
-
 final class MovieQuizViewController: UIViewController {
-    
-    //массив с элементами квиза
-    private let questions: [QuizQuestion] = [
-        QuizQuestion(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "Kill Bill", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "The Avengers", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "Deadpool", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "The Green Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "Old", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-        QuizQuestion(image: "The Ice Age Adventures of Buck Wild", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-        QuizQuestion(image: "Tesla", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-        QuizQuestion(image: "Vivarium", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false)
-    ]
     
     //связка ui элементов с кодом
     @IBOutlet private weak var textLabel: UILabel!
@@ -47,6 +12,13 @@ final class MovieQuizViewController: UIViewController {
     private var currentQuestionIndex: Int = 0
     //переменная для запоминания верных ответов
     private var correctAnswerCounter: Int = 0
+    
+    //общее кол-во вопросов для квиза
+    private let questionsAmount: Int = 10
+    //фабрика вопросов
+    private let questionFactory: QuestionFactory = QuestionFactory()
+    //текущий вопрос
+    private var currentQuestion: QuizQuestion?
     
     //настройка отображения статус бара
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -64,7 +36,7 @@ final class MovieQuizViewController: UIViewController {
         return QuizStepViewModel(
             image: UIImage(named: model.image) ?? UIImage(),
             question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
+            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
     
     //функция для отображения элемента квиза
@@ -89,9 +61,15 @@ final class MovieQuizViewController: UIViewController {
             self.currentQuestionIndex = 0
             self.correctAnswerCounter = 0
             
-            let firstQuestion = self.questions[self.currentQuestionIndex]
-            let viewModel = self.convert(model: firstQuestion)
-            self.show(quiz: viewModel)
+            if let firstQuestion = self.questionFactory.requestNextQuestion() {
+                self.currentQuestion = firstQuestion
+                let viewModel = self.convert(model: firstQuestion)
+                self.show(quiz: viewModel)
+            }
+            
+            //let firstQuestion = self.questions[self.currentQuestionIndex]
+            //let viewModel = self.convert(model: firstQuestion)
+            //self.show(quiz: viewModel)
         }
         
         //добавление кнопки на алерт
