@@ -7,6 +7,7 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var counterLabel: UILabel!
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var questionLabel: UILabel!
+    @IBOutlet private var buttons: [UIButton]!
     
     //переменная для отображения номера вопроса
     private var currentQuestionIndex: Int = 0
@@ -90,12 +91,14 @@ final class MovieQuizViewController: UIViewController {
             imageView.layer.borderWidth = 8
             imageView.layer.borderColor = UIColor.ypRed.cgColor
         }
+        enableOrDisableButtons()
         
         //настройка времени перехода между элементами квиза
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else {return}
             self.showNextQuestionOrResults()
             self.imageView.layer.borderWidth = 0
+            self.enableOrDisableButtons()
         }
     }
     
@@ -113,6 +116,12 @@ final class MovieQuizViewController: UIViewController {
             let viewModel = convert(model: nextQuestion)
             
             show(quiz: viewModel)
+        }
+    }
+    
+    private func enableOrDisableButtons() {
+        for button in buttons {
+            button.isEnabled.toggle()
         }
     }
     
