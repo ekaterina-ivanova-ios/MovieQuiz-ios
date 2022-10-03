@@ -29,7 +29,12 @@ final class MovieQuizViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        show(quiz: convert(model: questions[currentQuestionIndex]))
+        
+        if let firstQuestion = questionFactory.requestNextQuestion() {
+            currentQuestion = firstQuestion
+            let viewModel = convert(model: firstQuestion)
+            show(quiz: viewModel)
+        }
     }
     
     //функция для конвертации QuizQuestion -> QuizStepViewModel
@@ -47,7 +52,7 @@ final class MovieQuizViewController: UIViewController {
         counterLabel.text = step.questionNumber
         
     }
-
+    
     //функция для отображения алерта с результатами квиза
     private func show(quiz result: QuizResultsViewModel) {
         //создание алерта
@@ -104,20 +109,35 @@ final class MovieQuizViewController: UIViewController {
     
     //функция, описывающая логику отображения следующего элемента квиза || содержание алерта
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questions.count - 1 {
+        /**
+         if currentQuestionIndex == questionsAmount - 1 {
+         let text = correctAnswers == questionsAmount ?
+         "Поздравляем, Вы ответили на 10 из 10!" :
+         "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
+         */
+        
+        //if currentQuestionIndex == questions.count - 1 {
+        if currentQuestionIndex == questionsAmount - 1 {
             let viewModel = QuizResultsViewModel(
                 title: "Этот раунд окончен!",
-                text: "Ваш результат: \(correctAnswerCounter) из \(questions.count)",
+                // text: "Ваш результат: \(correctAnswerCounter) из \(questions.count)",
+                text: "Ваш результат: \(correctAnswerCounter) из \(questionsAmount)",
                 buttonText: "Сыграть ещё раз")
             show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1
-            let nextQuestion = questions[currentQuestionIndex]
-            let viewModel = convert(model: nextQuestion)
-            
-            show(quiz: viewModel)
+            //let nextQuestion = questions[currentQuestionIndex]
+            if let nextQuestion = questionFactory.requestNextQuestion() {
+                currentQuestion = nextQuestion
+                let viewModel = convert(model: nextQuestion)
+                
+                show(quiz: viewModel)
+            }
+            //let viewModel = convert(model: nextQuestion)
+            //show(quiz: viewModel)
         }
     }
+    
     
     private func enableOrDisableButtons() {
         for button in buttons {
@@ -125,14 +145,16 @@ final class MovieQuizViewController: UIViewController {
         }
     }
     
+    
     //обработка нажатия на кнопку "Нет"
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         showAnswerResult(isCorrect: false)
     }
-
+    
     //обработка нажатия на кнопку "Да"
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         showAnswerResult(isCorrect: true)
     }
     
 }
+
