@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     //связка ui элементов с кодом
     @IBOutlet private weak var textLabel: UILabel!
@@ -17,7 +17,11 @@ final class MovieQuizViewController: UIViewController {
     //общее кол-во вопросов для квиза
     private let questionsAmount: Int = 10
     //фабрика вопросов
-    private let questionFactory: QuestionFactory = QuestionFactory()
+    //private let questionFactory: QuestionFactory = QuestionFactory()
+    //with protocol
+    // private let questionFactory: QuestionFactoryProtocol = QuestionFactory()
+    //with delegate
+    private var questionFactory: QuestionFactoryProtocol?
     //текущий вопрос
     private var currentQuestion: QuizQuestion?
     
@@ -30,10 +34,31 @@ final class MovieQuizViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let firstQuestion = questionFactory.requestNextQuestion() {
-            currentQuestion = firstQuestion
-            let viewModel = convert(model: firstQuestion)
-            show(quiz: viewModel)
+        questionFactory = QuestionFactory(delegate: self)
+        
+        //without delegate
+        /*if let firstQuestion = questionFactory.requestNextQuestion() {
+         currentQuestion = firstQuestion
+         let viewModel = convert(model: firstQuestion)
+         show(quiz: viewModel)
+         }
+         */
+        
+        //with delegate
+        questionFactory?.requestNextQuestion()
+    }
+    
+    // MARK: - QuestionFactoryDelegate
+    
+    func didRecieveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
+            return
+        }
+        
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.show(quiz: viewModel)
         }
     }
     
@@ -66,17 +91,22 @@ final class MovieQuizViewController: UIViewController {
             guard let self = self else {return}
             self.currentQuestionIndex = 0
             self.correctAnswerCounter = 0
-            
-            if let firstQuestion = self.questionFactory.requestNextQuestion() {
-                self.currentQuestion = firstQuestion
-                let viewModel = self.convert(model: firstQuestion)
-                self.show(quiz: viewModel)
-            }
-            
-            //let firstQuestion = self.questions[self.currentQuestionIndex]
-            //let viewModel = self.convert(model: firstQuestion)
-            //self.show(quiz: viewModel)
         }
+        
+        //with delegate
+        questionFactory?.requestNextQuestion()
+        
+        /*
+         if let firstQuestion = self.questionFactory.requestNextQuestion() {
+         self.currentQuestion = firstQuestion
+         let viewModel = self.convert(model: firstQuestion)
+         self.show(quiz: viewModel)
+         */
+        
+        //let firstQuestion = self.questions[self.currentQuestionIndex]
+        //let viewModel = self.convert(model: firstQuestion)
+        //self.show(quiz: viewModel)
+        
         
         //добавление кнопки на алерт
         resultAlert.addAction(resultButtonAction)
@@ -126,13 +156,19 @@ final class MovieQuizViewController: UIViewController {
             show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1
+            
+            //with delegate
+            questionFactory?.requestNextQuestion()
+            
             //let nextQuestion = questions[currentQuestionIndex]
-            if let nextQuestion = questionFactory.requestNextQuestion() {
-                currentQuestion = nextQuestion
-                let viewModel = convert(model: nextQuestion)
-                
-                show(quiz: viewModel)
-            }
+            /*
+             if let nextQuestion = questionFactory.requestNextQuestion() {
+             currentQuestion = nextQuestion
+             let viewModel = convert(model: nextQuestion)
+             
+             show(quiz: viewModel)
+             }
+             */
             //let viewModel = convert(model: nextQuestion)
             //show(quiz: viewModel)
         }
