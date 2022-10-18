@@ -2,48 +2,75 @@
 import Foundation
 
 protocol StatisticService {
+    func store(correct count: Int, total amount: Int)
+    
     var totalAccuracy: Double { get }
     var gamesCount: Int { get }
     var bestGame: GameRecord { get }
-    
-    func store(correct count: Int, total amount: Int)
 }
 
 final class StatisticServiceImplementation: StatisticService {
+    
+    private enum Keys: String {
+        case correct, total, bestGame, gamesCount
+    }
+    
+    //создаем экземпляр UserDefaults
     private let userDefaults = UserDefaults.standard
+    
     private(set) var totalAccuracy: Double {
         get {
-            loadUserDefaults(for: .total, as: Double.self) ?? 0.0
+            if userDefaults.object(forKey: Keys.total.rawValue) == nil {
+                userDefaults.set(Double(), forKey: Keys.total.rawValue)
+            }
+            return userDefaults.double(forKey: Keys.total.rawValue)
         }
         set {
-            saveUserDefaults(value: newValue, at: .total)
+            userDefaults.set(newValue, forKey: Keys.total.rawValue)
         }
     }
     
     private(set) var gamesCount: Int {
         get {
-            loadUserDefaults(for: .gamesCount, as: Int.self) ?? 0
+          if userDefaults.object(forKey: Keys.gamesCount.rawValue) == nil {
+            userDefaults.set(Int(), forKey: Keys.gamesCount.rawValue)
+          }
+          return userDefaults.integer(forKey: Keys.gamesCount.rawValue)
         }
         set {
-            saveUserDefaults(value: newValue, at: .gamesCount)
+          userDefaults.set(newValue, forKey: Keys.gamesCount.rawValue)
         }
     }
     
     private(set) var correctAnswersCount: Int {
         get {
-            loadUserDefaults(for: .correct, as: Int.self) ?? 0
+            if userDefaults.object(forKey: Keys.correct.rawValue) == nil {
+            userDefaults.set(Int(), forKey: Keys.correct.rawValue)
+          }
+          return userDefaults.integer(forKey: Keys.correct.rawValue)
         }
         set {
-            saveUserDefaults(value: newValue, at: .correct)
+          userDefaults.set(newValue, forKey: Keys.correct.rawValue)
         }
     }
     
-    private(set) var bestGame: GameRecord {
+    var bestGame: GameRecord {
         get {
-            loadUserDefaults(for: .bestGame, as: GameRecord.self) ?? .init(correct: 0, total: 0, date: Date())
+            guard let data = userDefaults.data(forKey: Keys.bestGame.rawValue),
+            let record = try? JSONDecoder().decode(GameRecord.self, from: data) else {
+                return .init(correct: 0, total: 0, date: Date())
+            }
+            
+            return record
         }
+        
         set {
-            saveUserDefaults(value: newValue, at: .bestGame)
+            guard let data = try? JSONEncoder().encode(newValue) else {
+                print("Невозможно сохранить результат")
+                return
+            }
+            
+            userDefaults.set(data, forKey: Keys.bestGame.rawValue)
         }
     }
     
@@ -52,28 +79,8 @@ final class StatisticServiceImplementation: StatisticService {
         correctAnswersCount += count
         totalAccuracy = (Double(correctAnswersCount) / Double(gamesCount * 10)) * 100
         let currentGame = GameRecord(correct: count, total: amount, date: Date())
-        if bestGame < currentGame {
+        if bestGame.correct <= currentGame.correct {
             bestGame = currentGame
         }
-    }
-    
-    private func loadUserDefaults<T: Codable>(for key: Keys, as dataType: T.Type) -> T? {
-        guard let data = userDefaults.data(forKey: key.rawValue),
-              let count = try? JSONDecoder().decode(dataType.self, from: data) else {
-            return nil
-        }
-        return count
-    }
-    
-    private func saveUserDefaults<T: Codable>(value: T,at key: Keys) {
-        guard let data = try? JSONEncoder().encode(value) else {
-            print("Невозможно сохранить результат")
-            return
-        }
-        userDefaults.set(data, forKey: key.rawValue)
-    }
-    
-    private enum Keys: String {
-        case correct, total, bestGame, gamesCount
     }
 }
