@@ -44,9 +44,12 @@ class QuestionFactory: QuestionFactoryProtocol {
             } 
             
             let rating = Float(movie.rating) ?? 0
+        
+            let rangeValue = Float((5...9).randomElement() ?? 7)
+            let moreOrLessValue = ["больше","меньше"].randomElement() ?? "больше"
+            let text = "Рейтинг этого фильма \(moreOrLessValue) чем \(Int(rangeValue))?"
             
-            let text = "Рейтинг этого фильма больше чем 7?"
-            let correctAnswer = rating > 7
+            let correctAnswer = moreOrLessValue == "больше" ? (rating > rangeValue) : (rating < rangeValue)
             
             let question = QuizQuestion(image: imageData,
                                          text: text,

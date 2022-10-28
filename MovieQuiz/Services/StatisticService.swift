@@ -53,7 +53,7 @@ final class StatisticServiceImplementation: StatisticService {
         correctAnswersCount += count
         totalAccuracy = (Double(correctAnswersCount) / Double(gamesCount * 10)) * 100
         let currentGame = GameRecord(correct: count, total: amount, date: Date())
-        if bestGame < currentGame {
+        if bestGame <= currentGame {
             bestGame = currentGame
         }
     }

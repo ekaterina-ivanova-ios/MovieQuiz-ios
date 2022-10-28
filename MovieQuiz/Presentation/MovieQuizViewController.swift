@@ -124,7 +124,7 @@ final class MovieQuizViewController: UIViewController {
 // MARK: - QuestionDelegate
 
 extension MovieQuizViewController: QuestionFactoryDelegate {
-    
+
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {
             return
@@ -161,25 +161,33 @@ extension MovieQuizViewController {
 }
 
 //MARK: - create error allert
-
-//not ready
 extension MovieQuizViewController {
-    private func showNetworkError(message: String) {
+    private func showNetworkError(error: NetworkError) {
         hideLoadingIndicator()
-        let alertModel = AlertModel(
-            title: "Ошибка",
-            message: "Ошибка загрузки данных",
-            buttonText: "Попробовать еще раз",
-            completion: { [ weak self ] _ in
-                guard let self = self else { return }
-                
-                self.currentQuestionIndex = 0
-                self.correctAnswerCounter = 0
-                
-                self.questionFactory?.requestNextQuestion()
-            })
-        alertPresenter?.show(alertModel: alertModel)
         
+        switch error {
+        case .codeError, .invalidUrl:
+            let alertModel = AlertModel(title: "Внутренняя ошибка",
+                                        message: "Пожалуйста, переустановите приложение",
+                                        buttonText: "Закрыть приложение",
+                                        completion: { _ in
+                DispatchQueue.main.async {
+                    UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
+                    Thread.sleep(forTimeInterval: 2)
+                    exit(0)
+                }
+            })
+            alertPresenter?.show(alertModel: alertModel)
+        case .networkTaskError:
+            let alertModel = AlertModel(title: "Нет подключения к интернету",
+                                        message: "Пожалуйста, проверьте подключение к интернету",
+                                        buttonText: "Попробовать еще раз",
+                                        completion: { [weak self] _ in
+                guard let self = self else { return }
+                self.questionFactory?.loadData()
+            })
+            alertPresenter?.show(alertModel: alertModel)
+        }
     }
 }
 
@@ -191,7 +199,14 @@ extension MovieQuizViewController {
         questionFactory?.requestNextQuestion()
     }
 
-    func didFailLoadData(with error: Error) {
-        showNetworkError(message: error.localizedDescription)
+    func didFailLoadData(with error: NetworkError) {
+        switch error {
+        case .networkTaskError:
+            showNetworkError(error: .networkTaskError)
+        case .invalidUrl:
+            showNetworkError(error: .invalidUrl)
+        case .codeError:
+            showNetworkError(error: .codeError)
+        }
     }
 }
