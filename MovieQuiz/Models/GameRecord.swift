@@ -7,7 +7,7 @@ struct GameRecord: Codable {
     let date: Date
     
   
-    static func < (lhs: GameRecord, rhs: GameRecord) -> Bool {
+    static func <= (lhs: GameRecord, rhs: GameRecord) -> Bool {
         return lhs.correct < rhs.correct
     }
     
@@ -16,4 +16,5 @@ struct GameRecord: Codable {
     }
     
 }
+
 
