@@ -162,15 +162,21 @@ extension MovieQuizViewController {
 
 //MARK: - create error allert
 
+//not ready
 extension MovieQuizViewController {
     private func showNetworkError(message: String) {
         hideLoadingIndicator()
-        let alertModel = AlertModel (
+        let alertModel = AlertModel(
             title: "Ошибка",
             message: "Ошибка загрузки данных",
-            buttonText: "Попробовать ещё раз",
+            buttonText: "Попробовать еще раз",
             completion: { [ weak self ] _ in
                 guard let self = self else { return }
+                
+                self.currentQuestionIndex = 0
+                self.correctAnswerCounter = 0
+                
+                self.questionFactory?.requestNextQuestion()
             })
         alertPresenter?.show(alertModel: alertModel)
         

@@ -7,11 +7,10 @@ struct NetworkClient {
         case codeError
     }
     
-    //func get
-    // Result type = enum with failer & success
+
     func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
         
-    let request = URLRequest(url: url) // создаём запрос из url
+    let request = URLRequest(url: url)
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {

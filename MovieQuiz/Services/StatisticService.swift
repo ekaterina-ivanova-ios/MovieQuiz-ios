@@ -11,6 +11,7 @@ protocol StatisticService {
 
 final class StatisticServiceImplementation: StatisticService {
     private let userDefaults = UserDefaults.standard
+    
     private(set) var totalAccuracy: Double {
         get {
             loadUserDefaults(for: .total, as: Double.self) ?? 0.0
