@@ -77,6 +77,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1F779FAF290C0743001FD8CF /* Networker */ = {
+			isa = PBXGroup;
+			children = (
+				1F1EE867290056DF006C2BCB /* NetworkClient.swift */,
+				1F1EE86B29005A1E006C2BCB /* MoviesLoader.swift */,
+			);
+			path = Networker;
+			sourceTree = "<group>";
+		};
 		1FF878F728DB3CF400DF4148 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -99,8 +108,6 @@
 				1FD994C728ECAB410097EB65 /* QuestionFactoryDelegate.swift */,
 				1FD994C528ECA97B0097EB65 /* QuestionFactoryProtocol.swift */,
 				1F2587B928F6ED64009F8431 /* StatisticService.swift */,
-				1F1EE867290056DF006C2BCB /* NetworkClient.swift */,
-				1F1EE86B29005A1E006C2BCB /* MoviesLoader.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -156,6 +163,7 @@
 			children = (
 				ADF0CF75283FDAA10075F54D /* Helpers */,
 				1FF878F728DB3CF400DF4148 /* Models */,
+				1F779FAF290C0743001FD8CF /* Networker */,
 				8F4738322848DE2A005DF65E /* Presentation */,
 				8F4738332848DE46005DF65E /* Resources */,
 				1FF878F828DB3CFC00DF4148 /* Services */,
