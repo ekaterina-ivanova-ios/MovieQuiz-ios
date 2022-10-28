@@ -8,6 +8,7 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var questionLabel: UILabel!
     @IBOutlet private var buttons: [UIButton]!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
     private let questionsAmount: Int = 10
     private var alertPresenter: AlertProtocol?
@@ -26,15 +27,17 @@ final class MovieQuizViewController: UIViewController {
         super.viewDidLoad()
         
         alertPresenter = AlertPresenter(delegate: self)
-        questionFactory = QuestionFactory(delegate: self)
+        questionFactory = QuestionFactory(delegate: self, moviesLoader: MoviesLoader())
         statisticService = StatisticServiceImplementation()
         
-        questionFactory?.requestNextQuestion()
+        questionFactory?.loadData()
+        showLoadingIndicator()
     }
 
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
+            //image: UIImage(named: model.image) ?? UIImage(),
+            image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
@@ -121,7 +124,7 @@ final class MovieQuizViewController: UIViewController {
 // MARK: - QuestionDelegate
 
 extension MovieQuizViewController: QuestionFactoryDelegate {
-    
+
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {
             return
@@ -141,5 +144,69 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
 extension MovieQuizViewController: AlertDelegate {
     func presentAlert(_ alert: UIAlertController) {
         present(alert, animated: true)
+    }
+}
+
+//MARK: - ActivityIndicator func
+
+extension MovieQuizViewController {
+    private func showLoadingIndicator() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    
+    private func hideLoadingIndicator() {
+        activityIndicator.isHidden = true
+    }
+}
+
+//MARK: - create error allert
+extension MovieQuizViewController {
+    private func showNetworkError(error: NetworkError) {
+        hideLoadingIndicator()
+        
+        switch error {
+        case .codeError, .invalidUrl:
+            let alertModel = AlertModel(title: "Внутренняя ошибка",
+                                        message: "Пожалуйста, переустановите приложение",
+                                        buttonText: "Закрыть приложение",
+                                        completion: { _ in
+                DispatchQueue.main.async {
+                    UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
+                    Thread.sleep(forTimeInterval: 2)
+                    exit(0)
+                }
+            })
+            alertPresenter?.show(alertModel: alertModel)
+        case .networkTaskError:
+            let alertModel = AlertModel(title: "Нет подключения к интернету",
+                                        message: "Пожалуйста, проверьте подключение к интернету",
+                                        buttonText: "Попробовать еще раз",
+                                        completion: { [weak self] _ in
+                guard let self = self else { return }
+                self.questionFactory?.loadData()
+            })
+            alertPresenter?.show(alertModel: alertModel)
+        }
+    }
+}
+
+//MARK: - Add loading data from server
+
+extension MovieQuizViewController {
+    func didLoadDataFromServer() {
+        activityIndicator.isHidden = true
+        questionFactory?.requestNextQuestion()
+    }
+
+    func didFailLoadData(with error: NetworkError) {
+        switch error {
+        case .networkTaskError:
+            showNetworkError(error: .networkTaskError)
+        case .invalidUrl:
+            showNetworkError(error: .invalidUrl)
+        case .codeError:
+            showNetworkError(error: .codeError)
+        }
     }
 }
