@@ -145,7 +145,7 @@ YP Black</string>
                             </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" name="YP Black (iOS)"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="GCo-nm-0hG" secondAttribute="bottom" id="Fti-H0-b81"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="GCo-nm-0hG" secondAttribute="trailing" constant="20" id="Fwt-fe-Lxy"/>
@@ -173,6 +173,9 @@ YP Black</string>
         <namedColor>
             <string key="name">
 YP Black</string>
+            <color red="0.10199999809265137" green="0.10599999874830246" blue="0.13300000131130219" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="YP Black (iOS)">
             <color red="0.10199999809265137" green="0.10599999874830246" blue="0.13300000131130219" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="YP White">

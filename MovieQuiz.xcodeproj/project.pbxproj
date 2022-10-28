@@ -107,7 +107,7 @@
 				1FB0B30028E9E99A00E337A9 /* QuestionFactory.swift */,
 				1FD994C728ECAB410097EB65 /* QuestionFactoryDelegate.swift */,
 				1FD994C528ECA97B0097EB65 /* QuestionFactoryProtocol.swift */,
-				1F2587B928F6ED64009F8431 /* StatisticService.swift */,
+				1F97AA2C28FD28760009E6C3 /* StatisticService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -165,8 +165,8 @@
 				1FF878F728DB3CF400DF4148 /* Models */,
 				1F779FAF290C0743001FD8CF /* Networker */,
 				8F4738322848DE2A005DF65E /* Presentation */,
-				8F4738332848DE46005DF65E /* Resources */,
 				1FF878F828DB3CFC00DF4148 /* Services */,
+				8F4738332848DE46005DF65E /* Resources */,
 				AD1ABAB12831907B00B3E448 /* AppDelegate.swift */,
 				AD1ABAB32831907B00B3E448 /* SceneDelegate.swift */,
 			);
@@ -292,7 +292,6 @@
 				1FB0B30328E9EB5C00E337A9 /* QuizStepViewModel.swift in Sources */,
 				1FB0B30728E9EB7500E337A9 /* QuizQuestion.swift in Sources */,
 				1FFE468528ED63E700C89D24 /* AlertProtocol.swift in Sources */,
-				1F2587B828F6ED44009F8431 /* GameRecord.swift in Sources */,
 				1FB0B30128E9E99A00E337A9 /* QuestionFactory.swift in Sources */,
 				AD77F5742857F8810062FB14 /* Date+Extensions.swift in Sources */,
 				AD1ABAB22831907B00B3E448 /* AppDelegate.swift in Sources */,
