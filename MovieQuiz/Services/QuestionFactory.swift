@@ -14,7 +14,8 @@ class QuestionFactory: QuestionFactoryProtocol {
     }
     
     func loadData() {
-        moviesLoader.loadMovies { result in
+        moviesLoader.loadMovies { [weak self] result in
+            guard let self = self else {return}
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 switch result {
@@ -28,7 +29,7 @@ class QuestionFactory: QuestionFactoryProtocol {
         }
     }
     
-    func requestNextQuestion() {
+    func requestNextQuestion() { 
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             let index = (0..<self.movies.count).randomElement() ?? 0
