@@ -8,7 +8,7 @@ struct GameRecord: Codable {
     
   
     static func <= (lhs: GameRecord, rhs: GameRecord) -> Bool {
-        return lhs.correct < rhs.correct
+        return lhs.correct <= rhs.correct
     }
     
     func gameStatistic() -> String {

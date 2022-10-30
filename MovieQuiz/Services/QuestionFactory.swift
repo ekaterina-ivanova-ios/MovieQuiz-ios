@@ -4,7 +4,7 @@ import Foundation
 
 class QuestionFactory: QuestionFactoryProtocol {
     
-    private let delegate: QuestionFactoryDelegate?
+    private weak var delegate: QuestionFactoryDelegate?
     private let moviesLoader: MoviesLoading
     private var movies: [MostPopularMovie] = []
     
