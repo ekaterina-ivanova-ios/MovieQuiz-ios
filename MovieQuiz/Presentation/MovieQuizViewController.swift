@@ -166,7 +166,7 @@ extension MovieQuizViewController {
         hideLoadingIndicator()
         
         switch error {
-        case .codeError, .invalidUrl:
+        case .codeError, .invalidUrl, .test:
             let alertModel = AlertModel(title: "Внутренняя ошибка",
                                         message: "Пожалуйста, переустановите приложение",
                                         buttonText: "Закрыть приложение",
@@ -207,6 +207,8 @@ extension MovieQuizViewController {
             showNetworkError(error: .invalidUrl)
         case .codeError:
             showNetworkError(error: .codeError)
+        default:
+            "error"
         }
     }
 }
