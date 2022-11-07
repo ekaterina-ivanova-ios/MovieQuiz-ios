@@ -1,8 +1,7 @@
 
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
-
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var counterLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
@@ -21,11 +20,16 @@ final class MovieQuizViewController: UIViewController {
         presenter = MovieQuizPresenter(viewController: self)
         presenter.alertPresenter = AlertPresenter(delegate: self)
     }
-
+    
     func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         questionLabel.text = step.question
         counterLabel.text = step.questionNumber
+    }
+    
+    func showResult() {
+        imageView.layer.borderWidth = 0
+        enableOrDisableButtons()
     }
 
     func highlightImageBorder(isCorrectAnswer: Bool) {
@@ -42,11 +46,19 @@ final class MovieQuizViewController: UIViewController {
  
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         presenter.noButtonClicked()
-
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         presenter.yesButtonClicked()
+    }
+    
+   func showLoadingIndicator() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    
+    func hideLoadingIndicator() {
+        activityIndicator.isHidden = true
     }
     
 }

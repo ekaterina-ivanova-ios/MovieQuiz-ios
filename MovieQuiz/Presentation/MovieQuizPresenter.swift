@@ -5,19 +5,19 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     let questionsAmount: Int = 10
     private var currentQuestionIndex: Int = 0
     private var currentQuestion: QuizQuestion?
-    weak var viewController: MovieQuizViewController?
+    weak var viewControllerProtocol: MovieQuizViewControllerProtocol?
     private var correctAnswerCounter: Int = 0
     private var questionFactory: QuestionFactoryProtocol?
     private var statisticService: StatisticService?
     private var activityIndicator: UIActivityIndicatorView!
     var alertPresenter: AlertProtocol?
     
-    init(viewController: MovieQuizViewController) {
-        self.viewController = viewController
+    init(viewController: MovieQuizViewControllerProtocol) {
+        self.viewControllerProtocol = viewController
         questionFactory = QuestionFactory(delegate: self, moviesLoader: MoviesLoader())
         statisticService = StatisticServiceImplementation()
         questionFactory?.loadData()
-        showLoadingIndicator()
+        viewController.showLoadingIndicator()
         }
     
     private func isLastQuestion() -> Bool {
@@ -32,7 +32,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         currentQuestionIndex += 1
     }
     
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
+    func convert(model: QuizQuestion) -> QuizStepViewModel {
         QuizStepViewModel(
             image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
@@ -65,20 +65,19 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         currentQuestion = question
         let viewModel = convert(model: question)
         DispatchQueue.main.async { [weak self] in
-            self?.viewController?.show(quiz: viewModel)
+            self?.viewControllerProtocol?.show(quiz: viewModel)
         }
     }
   
-    private func showAnswerResult(isCorrect: Bool) {
-        viewController?.enableOrDisableButtons()
-        viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
+    func showAnswerResult(isCorrect: Bool) {
+        viewControllerProtocol?.enableOrDisableButtons()
+        viewControllerProtocol?.highlightImageBorder(isCorrectAnswer: isCorrect)
         didAnswer(isCorrect: true)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else {return}
             self.showNextQuestionOrResults()
-            self.viewController?.imageView.layer.borderWidth = 0
-            self.viewController?.enableOrDisableButtons()
+            self.viewControllerProtocol?.showResult()
         }
     }
     
@@ -113,8 +112,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer() {
-        guard let activityIndicator = self.viewController?.activityIndicator else {return}
-        activityIndicator.isHidden = true
+        viewControllerProtocol?.showLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
     
@@ -131,21 +129,8 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     }
     
-
-
-    private func showLoadingIndicator() {
-        guard let activityIndicator = self.viewController?.activityIndicator else {return}
-        activityIndicator.isHidden = false
-        activityIndicator.startAnimating()
-    }
-    
-    private func hideLoadingIndicator() {
-        guard let activityIndicator = self.viewController?.activityIndicator else {return}
-        activityIndicator.isHidden = true
-    }
-    
     private func showNetworkError(error: NetworkError) {
-        hideLoadingIndicator()
+        viewControllerProtocol?.hideLoadingIndicator()
         
         switch error {
         case .codeError, .invalidUrl, .test:
