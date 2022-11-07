@@ -28,6 +28,7 @@ final class MovieQuizViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        presenter.viewController = self
         
         alertPresenter = AlertPresenter(delegate: self)
         questionFactory = QuestionFactory(delegate: self, moviesLoader: MoviesLoader())
@@ -55,7 +56,7 @@ final class MovieQuizViewController: UIViewController {
         
     }
 
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswerCounter += 1
             imageView.layer.borderWidth = 8
@@ -114,7 +115,9 @@ final class MovieQuizViewController: UIViewController {
             button.isEnabled.toggle()
         }
     }
-    
+ 
+    //перенесено в презентер
+    /*
     private func checkUserAnswer(userAnswer answer: Bool) {
         guard let currentQuestion = currentQuestion else {
             return
@@ -122,13 +125,18 @@ final class MovieQuizViewController: UIViewController {
         let isUserGuessed = currentQuestion.correctAnswer == answer ? true : false
         showAnswerResult(isCorrect: isUserGuessed)
     }
+    */
+    
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        checkUserAnswer(userAnswer: false)
+        presenter.currentQuestion = currentQuestion
+        presenter.noButtonClicked()
+       
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        checkUserAnswer(userAnswer: true)
+        presenter.currentQuestion = currentQuestion
+        presenter.yesButtonClicked()
     }
     
 }
