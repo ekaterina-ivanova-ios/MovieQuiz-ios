@@ -16,7 +16,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         questionFactory = QuestionFactory(delegate: self, moviesLoader: MoviesLoader())
         statisticService = StatisticServiceImplementation()
         questionFactory?.loadData()
-        self.viewController?.showLoadingIndicator()
+        showLoadingIndicator()
         }
     
     func isLastQuestion() -> Bool {
@@ -116,11 +116,13 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
 
 
     func showLoadingIndicator() {
+        guard let activityIndicator = self.viewController?.activityIndicator else {return}
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
     }
     
     func hideLoadingIndicator() {
+        guard let activityIndicator = self.viewController?.activityIndicator else {return}
         activityIndicator.isHidden = true
     }
     

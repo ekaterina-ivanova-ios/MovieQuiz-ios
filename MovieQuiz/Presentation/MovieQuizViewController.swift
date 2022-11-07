@@ -68,46 +68,10 @@ final class MovieQuizViewController: UIViewController {
     
 }
 
-// MARK: - QuestionDelegate
-
-extension MovieQuizViewController: QuestionFactoryDelegate {
-
-    func didReceiveNextQuestion(question: QuizQuestion?) {
-        presenter.didReceiveNextQuestion(question: question)
-    }
-}
-
-
 // MARK: - AlertDelegate
 
 extension MovieQuizViewController: AlertDelegate {
     func presentAlert(_ alert: UIAlertController) {
         present(alert, animated: true)
-    }
-}
-
-//MARK: - ActivityIndicator func
-
-extension MovieQuizViewController {
-    func showLoadingIndicator() {
-        activityIndicator.isHidden = false
-        activityIndicator.startAnimating()
-    }
-    
-    func hideLoadingIndicator() {
-        activityIndicator.isHidden = true
-    }
-}
-
-//MARK: - Add loading data from server
-
-extension MovieQuizViewController {
-
-    func didLoadDataFromServer() {
-        presenter.didLoadDataFromServer()
-    }
-
-    func didFailLoadData(with error: NetworkError) {
-        presenter.didFailLoadData(with: error)
     }
 }
