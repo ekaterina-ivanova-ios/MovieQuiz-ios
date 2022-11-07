@@ -33,7 +33,7 @@ final class MovieQuizPresenter {
             return
         }
         let isUserGuessed = currentQuestion.correctAnswer == answer ? true : false
-        viewController?.showAnswerResult(isCorrect: isUserGuessed)
+        self.viewController?.showAnswerResult(isCorrect: isUserGuessed)
     }
     
     func noButtonClicked() {
@@ -42,6 +42,18 @@ final class MovieQuizPresenter {
     
     func yesButtonClicked() {
         checkUserAnswer(userAnswer: true)
+    }
+    
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
+            return
+        }
+        
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.viewController?.show(quiz: viewModel)
+        }
     }
     
 } 

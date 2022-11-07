@@ -12,7 +12,6 @@ final class MovieQuizViewController: UIViewController {
     
     private var alertPresenter: AlertProtocol?
     private var questionFactory: QuestionFactoryProtocol?
-    private var currentQuestion: QuizQuestion?
     private var statisticService: StatisticService?
     private var correctAnswerCounter: Int = 0
     //mvc
@@ -38,18 +37,7 @@ final class MovieQuizViewController: UIViewController {
         showLoadingIndicator()
     }
 
-    //mvc
-    /*
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        return QuizStepViewModel(
-            //image: UIImage(named: model.image) ?? UIImage(),
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
-    }
-    */
-    
-    private func show(quiz step: QuizStepViewModel) {
+    func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         questionLabel.text = step.question
         counterLabel.text = step.questionNumber
@@ -78,9 +66,6 @@ final class MovieQuizViewController: UIViewController {
     
     
     private func showNextQuestionOrResults() {
-        //mvc
-        //if currentQuestionIndex == questionsAmount - 1
-        //mvp
         if presenter.isLastQuestion(){
             statisticService?.store(correct: correctAnswerCounter, total: presenter.questionsAmount)
             
@@ -94,9 +79,6 @@ final class MovieQuizViewController: UIViewController {
                 completion: { [ weak self ] _ in
                     guard let self = self else { return }
                 
-                    //mvc
-                    //self.currentQuestionIndex = 0
-                    //mvp
                     self.presenter.resetQuestionIndex()
                     self.correctAnswerCounter = 0
                     
@@ -116,26 +98,12 @@ final class MovieQuizViewController: UIViewController {
         }
     }
  
-    //перенесено в презентер
-    /*
-    private func checkUserAnswer(userAnswer answer: Bool) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let isUserGuessed = currentQuestion.correctAnswer == answer ? true : false
-        showAnswerResult(isCorrect: isUserGuessed)
-    }
-    */
-    
-    
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        presenter.currentQuestion = currentQuestion
         presenter.noButtonClicked()
        
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        presenter.currentQuestion = currentQuestion
         presenter.yesButtonClicked()
     }
     
@@ -146,18 +114,7 @@ final class MovieQuizViewController: UIViewController {
 extension MovieQuizViewController: QuestionFactoryDelegate {
 
     func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
-        
-        currentQuestion = question
-        //mvc
-        //let viewModel = convert(model: question)
-        //mvp
-        let viewModel = presenter.convert(model: question)
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: viewModel)
-        }
+        presenter.didReceiveNextQuestion(question: question)
     }
 }
 
