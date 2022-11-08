@@ -29,5 +29,5 @@ struct NetworkClient: NetworkRouting {
 }
 
 enum NetworkError: Error {
-    case codeError, invalidUrl, networkTaskError, test
+    case codeError, invalidUrl, networkTaskError
 }

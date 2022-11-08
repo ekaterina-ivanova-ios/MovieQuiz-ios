@@ -112,7 +112,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer() {
-        viewControllerProtocol?.showLoadingIndicator()
+        viewControllerProtocol?.hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
     
@@ -124,8 +124,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             showNetworkError(error: .invalidUrl)
         case .codeError:
             showNetworkError(error: .codeError)
-        default:
-            "error"
         }
     }
     
@@ -133,7 +131,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         viewControllerProtocol?.hideLoadingIndicator()
         
         switch error {
-        case .codeError, .invalidUrl, .test:
+        case .codeError, .invalidUrl:
             let alertModel = AlertModel(title: "Внутренняя ошибка",
                                         message: "Пожалуйста, переустановите приложение",
                                         buttonText: "Закрыть приложение",
