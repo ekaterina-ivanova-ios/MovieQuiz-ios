@@ -7,7 +7,11 @@ protocol MoviesLoading {
 
 struct MoviesLoader: MoviesLoading {
     
-    let networkClient = NetworkClient()
+    private let networkClient: NetworkRouting
+    
+    init(networkClient: NetworkRouting = NetworkClient()) {
+        self.networkClient = networkClient
+    }
     
     func loadMovies(handler: @escaping (Result<MostPopularMovies, NetworkError>) -> Void) {
         let httpMethod = HttpMethod.get

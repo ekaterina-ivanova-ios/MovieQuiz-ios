@@ -1,7 +1,10 @@
-
 import Foundation
 
-struct NetworkClient {
+protocol NetworkRouting {
+    func fetch(requestModel: RequestModel, handler: @escaping (Result<Data, NetworkError>) -> Void)
+}
+
+struct NetworkClient: NetworkRouting {
     
     func fetch(requestModel: RequestModel, handler: @escaping (Result<Data, NetworkError>) -> Void) {
         guard let url = URL(string: requestModel.url) else {
